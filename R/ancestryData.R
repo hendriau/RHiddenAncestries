@@ -9,7 +9,10 @@
 #' @docType data
 #'
 #' @usage data(ancestryData)
+#'
 #' @format SNP, chromosome, refernce allele frequencies, observed allele frequencies
+#'
+#' @keywords datasets
 #'
 #' @examples
 #' data("ancestryData")
