@@ -17,7 +17,7 @@
 #' ancestr(ref,obs)
 #'
 #' @export
-#' @importFrom nloptr
+#' @importFrom nloptr slsqp
 #'
 ancestr = function(refmatrix, obsvector){
   
