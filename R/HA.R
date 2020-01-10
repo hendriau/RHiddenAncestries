@@ -11,9 +11,9 @@
 #' @keywords genomics
 #' 
 #' @examples
-#' data <- data("packagedata")
-#' ref <-data[,c("ref_afr", "ref_eas", "ref_eur", "ref_nam", "ref_sas")]
-#' obs <- cbind(data$gnomad_afr)
+#' data("ancestryData")
+#' ref <-ancestryData[,c("ref_afr", "ref_eas", "ref_eur", "ref_nam", "ref_sas")]
+#' obs <- cbind(ancestryData$gnomad_afr)
 #' ancestr(ref,obs)
 #'
 #' @export

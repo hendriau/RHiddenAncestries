@@ -3,3 +3,4 @@ Version: 0.15
 Imports:
     nloptr
 RoxygenNote: 7.0.2
+LazyData: true
