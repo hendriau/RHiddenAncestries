@@ -1,6 +1,24 @@
-## SLSQP Solving Function
-
-
+#' Hidden Ancestries function
+#'
+#' Estimates ancestry proportions in heterogeneous allele frequency data
+#'
+#' @param refmatrix matrix of reference allele frequency data
+#' @param obsvector observed heterogeneous allele frequency vector
+#' @return Estimated ancestry proportions
+#'
+#' @author Gregory Matesi, \email{gregory.matesi@ucdenver.edu}
+#' @reference \url{http://www.ucdenver.edu/academics/colleges/PublicHealth/Academics/departments/Biostatistics/About/Faculty/Pages/HendricksAudrey.aspx}
+#' @keywords genomics
+#' 
+#' @examples
+#' data <- data("packagedata")
+#' ref <-data[,c("ref_afr", "ref_eas", "ref_eur", "ref_nam", "ref_sas")]
+#' obs <- cbind(data$gnomad_afr)
+#' ancestr(ref,obs)
+#'
+#' @export
+#' @importFrom nloptr
+#'
 ancestr = function(refmatrix, obsvector){
   
   
