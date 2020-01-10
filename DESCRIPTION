@@ -1,4 +1,5 @@
 Package: RHiddenAncestries
-Version: 0.14
+Version: 0.15
 Imports:
     nloptr
+RoxygenNote: 7.0.2
