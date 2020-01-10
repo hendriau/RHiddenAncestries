@@ -1,6 +1,5 @@
 ## SLSQP Solving Function
 
-library(nloptr)
 
 ancestr = function(refmatrix, obsvector){
   
