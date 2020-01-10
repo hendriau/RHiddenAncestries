@@ -16,5 +16,4 @@
 #' ref <-ancestryData[,c("ref_afr", "ref_eas", "ref_eur", "ref_nam", "ref_sas")]
 #' obs <- cbind(ancestryData$gnomad_afr)
 #' ancestr(ref,obs)
-#'
 "ancestryData"
