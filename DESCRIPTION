@@ -4,3 +4,5 @@ Imports:
     nloptr
 LazyData: true
 RoxygenNote: 7.0.2
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
