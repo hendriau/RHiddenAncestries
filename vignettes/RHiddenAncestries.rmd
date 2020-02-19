@@ -1,8 +1,45 @@
 ---
 title: "RHiddenAncestries"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{RHiddenancestries}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+output:
+  pdf_document: default
+  rmarkdown::html_vignette: default
+vignette: |
+  %\VignetteIndexEntry{RHiddenancestries} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
 ---
+The R package for estimating ancestry proportions in heterogeneous genetic data. This method was developed by the Hidden Ancestries team at the University of Colorado Denver and is headed by Dr Audrey Hendricks.
+
+# Usage
+```r
+HA(reference, observed)
+```
+
+# Arguments
+
+**D**
+    Dataframe with N SNPs. Variables include Chromosome, RSID, A1, A2, k reference ancestry allele frequencies, obs number of heterogeneous observed allele frequencies.
+    
+**k**
+    Integer number of reference ancestries present in the model
+    
+**obs**
+    number of observed ancestries in the merged data. obs specifies which observed ancestry will be run through the algorithm.
+# Details
+
+# Value
+
+
+
+# Note
+
+
+
+# References
+
+
+
+# See Also
+
+
+
+# Examples
+
