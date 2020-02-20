@@ -39,9 +39,9 @@ ancestr = function(D=NULL, k=NULL, t=1){
     # First we create a new matrix that concatenates the reference and observed columns
     # The first item in the list returned by the data_processor function is our
     # reference columns. The second item is the observed column.
-    reference_observed  = cbind(data_processor(ancestryData,k,obs)[[1]],
-                                data_processor(ancestryData,k,obs)[[2]])
-    refmatrix <- data_processor(ancestryData,k,obs)[[1]]
+    reference_observed  = cbind(data_processor(ancestryData,k,t)[[1]],
+                                data_processor(ancestryData,k,t)[[2]])
+    refmatrix <- data_processor(ancestryData,k,t)[[1]]
     
     # the Sequential Quadratic Programming algorithm our method uses (slsqp in the nloptr package) 
     #requires a starting guess at which to evaluate the objective function.
@@ -132,5 +132,5 @@ ancestr = function(D=NULL, k=NULL, t=1){
            )
 
 
-    return(val)
+    return(print(val))
 }
