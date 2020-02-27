@@ -2,8 +2,9 @@
 #'
 #' Estimates ancestry proportions in heterogeneous allele frequency data
 #'
-#' @param refmatrix matrix of reference allele frequency data
-#' @param obsvector observed heterogeneous allele frequency vector
+#' @param D dataframe of reference and observed allele frequency data
+#' @param k number of reference ancestries
+#' @param x_0 guess
 #' @return Estimated ancestry proportions
 #'
 #' @author Gregory Matesi, \email{gregory.matesi@ucdenver.edu}
