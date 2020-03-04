@@ -2,9 +2,12 @@
 #'
 #' Estimates ancestry proportions in heterogeneous allele frequency data
 #'
-#' @param D dataframe of reference and observed allele frequency data
-#' @param k number of reference ancestries
-#' @param x_0 guess
+#' @param D dataframe: This dataframe should be in the format described in our data formatting document.
+#' @param k integer: This parameter is the number of reference ancestries present in your dataframe D.
+#' @param t integer: variable t is the number of the observed allele frequency
+#' column the user wishes to run through SQP. If not specified, the function will just use the first
+#' observed vector.
+#' @param x_0 : x_0 is the starting guess for the SLSQP algorithm.
 #' @return Estimated ancestry proportions
 #'
 #' @author Gregory Matesi, \email{gregory.matesi@ucdenver.edu}
@@ -18,23 +21,36 @@
 #' @export
 #' @importFrom nloptr slsqp
 #'
-#ancestr = function(refmatrix, obsvector){
-ancestr = function(D=NULL, k=0, t=1){  
+ancestr = function(D=NULL, k=0, t=0, x_0 =NULL){  
   
-  # CHECKS
+  ##########################
+  # Initial Checks
+  ##########################
+  # Check if D was specified
   if (length(D)==0){
-    stop("D is of length 0")
-  }
-  
-  if(dim(D)[2] != 5+k+t){
-    stop("Make sure there are k reference ancestries and t observed ancestries in your data.
+    stop("ERROR: D is of length 0. 
          Make sure that your file format fits:
-         chromosome, rsid, bP, a1, a2, reference, observed")
+         chromosome, rsid, bP, a1, a2, reference ancesries, observed ancestries")
   }
   
-  if (k==0){
-    stop("k=0. Please specify a number of reference ancestries for k")
+  # Check if D has at least 5+k+t columns
+  if(dim(D)[2] < 5+k+t){
+    stop("Make sure there are k reference ancestries and at least t observed ancestries in your dataframe.
+         Make sure that your file format fits:
+         chromosome, rsid, bP, a1, a2, reference ancesries, observed ancestries")
   }
+  
+  # Check if k=0
+  if (k==0){
+    stop("ERROR: k=0. Please specify a number of reference ancestries for k")
+  }
+  
+  # Check if user specified an observed ancestry
+  if (t==0){
+    stop("ERROR: t=0 Please specify an observed ancestry allele frequency column from your data.")
+  }
+  ################################################################################################
+  ################################################################################################
   
   # The user enters a Nx... matrix containging 
   # chromosome, rsid, base pair, A1, A2, k reference ancestries, t observed ancestries.
@@ -61,14 +77,50 @@ ancestr = function(D=NULL, k=0, t=1){
   #requires a starting guess at which to evaluate the objective function.
   # We need K starting guesses, one for each of the ancestry proportion values being estimated.
   # Here we set each starting guess to be 1/K.
-  # It is necessary that these starting guesses non negative and sum to one.
-  starting = numeric(ncol(refmatrix))
-  for (i in 1:(ncol(refmatrix))){
-    starting[i] = 1/ncol(refmatrix)
+  # It is necessary that these starting guesses are non negative and sum to one.
+  
+  # If user specified a starting guess, set to to the variable called "starting"
+  if(length(x_0) != 0){
+    
+    #########################
+    # Check if x_0 is numeric
+    if (is.numeric(x_0)==FALSE){
+      stop("ERROR: Please make sure x_0 is a positive numeric vector of length k that sums to one")
+    }
+    
+    # Check if length(x_0)==k
+    if (length(x_0)!= k){
+      stop("ERROR: Please make sure x_0 is a positive numeric vector of length k that sums to one")
+    }
+    
+    # Check that x_0 is positive
+    if (all(x_0>0) == FALSE){
+      stop("ERROR: Please make sure x_0 is a positive numeric vector of length k that sums to one")
+    }
+    
+    # Check if sum(x_0) = 1
+    if (sum(x_0)!=1){
+      stop("ERROR: Please make sure x_0 is a positive numeric vector of length k that sums to one")
+    }
+    #########################
+    
+    ###############################
+    # Set the starting guess to x_0
+    ###############################
+    starting = x_0
   }
   
-  # Here we are defining the objective function. This function is evaluated at a point
-  # x in R^K. Each of our K reference allele frequencies are multiplied by 
+  # If the user did not specify a starting guess then one is provided.
+  # The starting guess will be 1/k for each of the k ancestry proportion values.
+  else{
+    starting = numeric(ncol(refmatrix))
+    for (i in 1:(ncol(refmatrix))){
+      starting[i] = 1/ncol(refmatrix)
+    }
+  }
+  
+  # Here we are defining the objective function. This function is evaluated at a 
+  # k-dimensional point x . Each of our K reference allele frequencies are multiplied by 
   # our current best guess for the ancestry proportion.
   # We then subtract the allele frequency values from the observed homogeneous population.
   # And finally this sum is squared to achieve a least squares form.
@@ -139,7 +191,13 @@ ancestr = function(D=NULL, k=0, t=1){
   # value is the minimization function evaluated at par
   # iter is the number of iterations that the algorithm took to reach the optimal solution of par
   # finally ttime is the run time for the algorithm
-  val = c( S$par,
+  
+  d <- data.frame() 
+  for (i in 1:k){
+    d[1,i] <- colnames(D)[5+i] 
+    d[2,i] <- S$par[i]
+  }
+  val = c( d,
            S$value,
            S$iter,
            ttime
