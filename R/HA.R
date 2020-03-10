@@ -192,17 +192,15 @@ ancestr = function(D=NULL, k=0, t=0, x_0 =NULL){
   # iter is the number of iterations that the algorithm took to reach the optimal solution of par
   # finally ttime is the run time for the algorithm
   
-  d <- data.frame() 
-  for (i in 1:k){
-    d[1,i] <- colnames(D)[5+i] 
-    d[2,i] <- S$par[i]
+  d <- data.frame(matrix(ncol = k+3, nrow = 1)) 
+  colnames(d)[1:3] <- c("objective", "iterations", "time")
+  colnames(d)[4:(3+k)] <- c(colnames(D)[6:(5+k)])
+  
+  d[1] <- S$value
+  d[2] <- S$iter
+  d[3] <- ttime
+  for(i in 1:k){
+    d[3+i] <- S$par[i]
   }
-  val = c( d,
-           S$value,
-           S$iter,
-           ttime
-  )
-  
-  
-  return(print(val))
+  return(d)
 }
