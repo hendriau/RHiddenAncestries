@@ -10,7 +10,7 @@ The R package for estimating ancestry proportions in heterogeneous genetic data.
 
 # Usage
 ```r
-HA(reference, observed)
+ancestr(D=NULL,k=NULL,t=0)
 ```
 
 # Arguments
@@ -26,7 +26,13 @@ HA(reference, observed)
 # Details
 
 # Value
+**par** k optimal ancestry proportion estimates
 
+**val** objective function value of the optimal point
+
+**iter** iterations to achieve optimum
+
+**time** run time.
 
 
 # Note

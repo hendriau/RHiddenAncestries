@@ -35,7 +35,6 @@
 #' E <- updateAF(ancestryData,A)
 #' 
 #' @export
-#'
 ######################
 ######################
 # INPUT: 2 data.frames
