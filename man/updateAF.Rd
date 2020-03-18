@@ -20,7 +20,25 @@ data.frame D with an additional column at the end containing updated allele freq
 updates allele frequency data in heterogeneous genetic variant data
 }
 \examples{
-write code
+When you make the second input dataframe, the name of the second ancestry 
+(gnomad_afr in the example) must match the observed column in D that you want
+to generate updated allele frequencies for.
+
+# Load in the dataframe for the first argument in the function, D, as described below.
+data(ancestryData)
+
+# User must create a second input datafram containing the pi_hat and pi_star values
+# for each ancestry. A is also described below.
+A <-
+   data.frame(eur_1000G  = c(pi_star = 0, pi_hat = .15),
+      gnomad_afr = c(pi_star = 1, pi_hat = .85))
+ 
+# Call the funtion using two inputs 
+#   (1) ancestryData
+#   (2) A
+# and store the results in a new dataframe called E.
+# The final dolumn of E will contain the updated allele frequencies.
+E <- updateAF(ancestryData,A)
 
 }
 \author{

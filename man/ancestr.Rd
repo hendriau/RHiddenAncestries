@@ -4,12 +4,18 @@
 \alias{ancestr}
 \title{Hidden Ancestries function}
 \usage{
-ancestr(refmatrix, obsvector)
+ancestr(D = NULL, k = 0, t = 0, x_0 = NULL)
 }
 \arguments{
-\item{refmatrix}{matrix of reference allele frequency data}
+\item{D}{dataframe: This dataframe should be in the format described in our data formatting document.}
 
-\item{obsvector}{observed heterogeneous allele frequency vector}
+\item{k}{integer: This parameter is the number of reference ancestries present in your dataframe D.}
+
+\item{t}{integer: variable t is the number of the observed allele frequency
+column the user wishes to run through SQP. If not specified, the function will just use the first
+observed vector.}
+
+\item{x_0}{: x_0 is the starting guess for the SLSQP algorithm.}
 }
 \value{
 Estimated ancestry proportions
@@ -18,10 +24,8 @@ Estimated ancestry proportions
 Estimates ancestry proportions in heterogeneous allele frequency data
 }
 \examples{
-data <- data("packagedata")
-ref <-data[,c("ref_afr", "ref_eas", "ref_eur", "ref_nam", "ref_sas")]
-obs <- cbind(data$gnomad_afr)
-ancestr(ref,obs)
+data("ancestryData")
+ancestr(ancestryData, 5, 1)
 
 }
 \author{
