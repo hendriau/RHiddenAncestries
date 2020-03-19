@@ -6,6 +6,7 @@
 #' in the data format document.
 #' @param ancestry dataframe: This dataframe is described below in the code.
 #' It is also described in the README.
+#' @param t is the string name of the observed ancestry
 #' @return data.frame D with an additional column at the end containing updated allele frequencies.
 #'
 #' @author Gregory Matesi, \email{gregory.matesi@ucdenver.edu}
@@ -41,7 +42,7 @@
 #   D:
 #       
 #
-#   CHR  RSID       bP       A1 A2  eur_1000G   ...  iam_1000G gnomad_afr gnomad_amr gnomad_oth
+#   CHR  RSID       bP       A1 A2  ref_eur     ...  ref_iam   obs_afr    obs_amr    obs_oth
 #   1    rs2887286  1156131  C  T   0.173275495 ...  0.7093    0.4886100  0.52594300 0.22970500
 #   1    rs41477744 2329564  A  G   0.001237745 ...  0.0000    0.0459137  0.00117925 0.00827206
 #   1    rs9661525  2952840  G  T   0.168316089 ...  0.2442    0.1359770  0.28605200 0.15561700
@@ -50,17 +51,32 @@
 #   1    rs7514979  3654595  T  C   0.004950604 ...  0.0000    0.3362490  0.01650940 0.02481620
 #
 #   ancestry:
-#      data.frame(eur_1000G  = c(pi_star = 0, pi_hat = .15),
-#                 gnomad_afr = c(pi_star = 1, pi_hat = .85))
-#            eur_1000G  afr_gnomad
+#      data.frame(ref_eur  = c(pi_star = 0, pi_hat = .15),
+#                 obs_afr  = c(pi_star = 1, pi_hat = .85))
+#
+#      data.frame(ref_eur  = c(pi_star = 0, pi_hat = NA),
+#                 obs_afr  = c(pi_star = 1, pi_hat = NA))
+#
+#
+#            ref_eur    ref_afr
 #   pi_star  0.00       1.00
 #   pi_hat   0.15       0.85
+#
+#            ref_eur    ref_afr
+#   pi_star  0.00       1.00
+#   pi_hat   NA         NA
 ######################
 ######################
 
-updateAF <- function(D=NULL, ancestry=NULL){
+updateAF <- function(D=NULL, ancestry=NULL, k=NULL, t="obs_afr"){
 
-  
+#   Check to see if pi_hats are NA. If the user entered NA for the pi_hats, use ancestr to obtain 
+#      ancestry proportion estimates.
+  if(all(is.na(ancestry[2,])) == TRUE){
+     t1 <- which(colnames(D) == t) - (5+k)
+  ancestr(D,k,t1)
+  }
+    
 #   Normalize pi. We need the pi_hats and pi_stars to sum to 1
   ancestry[2,] <- ancestry[2,] / sum(ancestry[2,])
   ancestry[1,] <- ancestry[1,] / sum(ancestry[1,])
