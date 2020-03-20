@@ -25,8 +25,8 @@
 #' # User must create a second input datafram containing the pi_hat and pi_star values
 #' # for each ancestry. A is also described below.
 #' A <-
-#'    data.frame(eur_1000G  = c(pi_star = 0, pi_hat = .15),
-#'       gnomad_afr = c(pi_star = 1, pi_hat = .85))
+#'    data.frame(ref_eur  = c(pi_star = 0, pi_hat = .15),
+#'       obs_afr = c(pi_star = 1, pi_hat = .85))
 #'  
 #' # Call the funtion using two inputs 
 #' #   (1) ancestryData
@@ -51,11 +51,19 @@
 #   1    rs7514979  3654595  T  C   0.004950604 ...  0.0000    0.3362490  0.01650940 0.02481620
 #
 #   ancestry:
+#         For this input, the user may choose to leave the pi_hat entries black.
+#         If they choose to do so, this functino will call the ancestr function
+#         to estimates pi_hat values. 
+#         If the user chooses to go this route, they will need to enter a k value,
+#         which is the number of reference ancestries, and a t = "obs_ancestry"
+#         string that will indicate which observed ancestry to use in the other 
+#         function.
+#
 #      data.frame(ref_eur  = c(pi_star = 0, pi_hat = .15),
-#                 obs_afr  = c(pi_star = 1, pi_hat = .85))
+#                 ref_afr  = c(pi_star = 1, pi_hat = .85))
 #
 #      data.frame(ref_eur  = c(pi_star = 0, pi_hat = NA),
-#                 obs_afr  = c(pi_star = 1, pi_hat = NA))
+#                 ref_afr  = c(pi_star = 1, pi_hat = NA))
 #
 #
 #            ref_eur    ref_afr
@@ -68,13 +76,23 @@
 ######################
 ######################
 
-updateAF <- function(D=NULL, ancestry=NULL, k=NULL, t="obs_afr"){
+updateAF2 <- function(D=NULL, ancestry=NULL, k=NULL, t="obs_afr"){
 
-#   Check to see if pi_hats are NA. If the user entered NA for the pi_hats, use ancestr to obtain 
-#      ancestry proportion estimates.
+#   Check to see if pi_hats are NA. If the user entered NA for the pi_hats, 
+#   use ancestr to obtain pi_hat estimates for whichever ancestry the user 
+#   entered for t.
   if(all(is.na(ancestry[2,])) == TRUE){
-     t1 <- which(colnames(D) == t) - (5+k)
-  ancestr(D,k,t1)
+    
+    # set t1 as an integer that matches the t input from the other function.
+    # I'm going to change the other function so that we t is a string in order 
+    # to more closely match this functions input.
+    t1 <- which(colnames(D) == t) - (5+k)
+    
+    # Set each pi_hat value
+    for (i in a:dim(ancestry[2])) {
+      ancestry[2,i] <- ancestr(D,k,t1)[1,colnames(ancestry)[i]]
+    }
+    
   }
     
 #   Normalize pi. We need the pi_hats and pi_stars to sum to 1
