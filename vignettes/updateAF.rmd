@@ -1,0 +1,117 @@
+---
+title: "updateAF"
+output:
+  pdf_document: default
+  rmarkdown::html_vignette: default
+vignette: |
+  %\VignetteIndexEntry{RHiddenancestries} %\VignetteEngine{knitr::rmarkdown} \usepackage[utf8]{inputenc}
+---
+The R function for updating allele frequencies in heterogeneous genetic data. Credit goes to Katie Marker for developing the method and to the Hidden Ancestries research Project headed by Dr Audrey Hendricks.
+
+# Usage
+```r
+updateAF(D=NULL,ancestry=NULL,k=NULL)
+```
+
+# Arguments
+
+**D**
+    Dataframe with N SNPs. Variables include Chromosome, RSID, A1, A2, k reference ancestry allele frequencies, observed ancestry allele frequencies.
+
+**ancestry**
+    data frame containing with two rows, one column for the observed ancestry, and one column each for the reference ancestries.
+    The first row is array of pi_star values.
+    The second row is the array of pi_hat values. pi_star is the user defined ancestry proportion value. pi_hat is the estimated ancestry proportion.
+    
+**k**
+    Integer number of reference ancestries present in the model.
+    This input is only used if the pi_hat values in **ancestry** are **NA**.
+    
+# Details
+Calculates updated allele frequencies in heterogeneous genetic allele frequency data.
+
+# Value
+**D** the function returns the original dataframe **D** with an additional column at the end. The additional collumn is an array of the updated allele frequencies calculated for each SNP.
+
+
+# Note
+
+
+
+# References
+
+
+
+# See Also
+**ancestr()**
+
+
+# Examples
+
+## inputs
+
+### D:
+     
+```{r eval=FALSE}
+data(ancestryData)
+
+head(ancestryData)
+#   CHR  RSID       bP       A1 A2  ref_eur     ...  ref_iam   obs_afr    obs_amr    obs_oth
+#   1    rs2887286  1156131  C  T   0.173275495 ...  0.7093    0.4886100  0.52594300 0.22970500
+#   1    rs41477744 2329564  A  G   0.001237745 ...  0.0000    0.0459137  0.00117925 0.00827206
+#   1    rs9661525  2952840  G  T   0.168316089 ...  0.2442    0.1359770  0.28605200 0.15561700
+#   1    rs2817174  3044181  C  T   0.428212624 ...  0.5000    0.8548790  0.48818000 0.47042500
+#   1    rs12139206 3504073  T  C   0.204214851 ...  0.3372    0.7241780  0.29550800 0.25874800
+#   1    rs7514979  3654595  T  C   0.004950604 ...  0.0000    0.3362490  0.01650940 0.02481620
+
+```
+
+### ancestry:
+In the first example of the **ancestry** input the pi_hat values are inputted by the user. In the second example of the **ancestry** input the pi_hat values are not know by the user. The user enters NA for these values. This prompts the use of the **ancestr()** function to estimate the pi_hat values.
+```{r eval=FALSE}
+A <- data.frame(ref_eur  = c(pi_star = 0, pi_hat = .15),
+                 obs_afr  = c(pi_star = 1, pi_hat = .85))
+#
+#            ref_eur    obs_afr
+#   pi_star  0.00       1.00
+#   pi_hat   0.15       0.85
+##########################################################
+A1 <- data.frame(ref_eur  = c(pi_star = 0, pi_hat = NA),
+                 obs_afr  = c(pi_star = 1, pi_hat = NA))
+#
+#            ref_eur    obs_afr
+#   pi_star  0.00       1.00
+#   pi_hat   NA         NA
+```
+
+## Example 1
+```{r eval=FALSE}
+
+data(ancestryData)
+A <- data.frame(ref_eur  = c(pi_star = 0, pi_hat = .15),
+                 obs_afr  = c(pi_star = 1, pi_hat = .85))
+
+# Call the funtion using 2 inputs 
+#    (1) D = ancestryData  
+#    (2) ancestry = A
+# 
+#  and store the results in a new dataframe called E.
+#  The final dolumn of E will contain the updated allele frequencies.
+ E <- updateAF(ancestryData,A)
+```
+
+## Example 2
+```{r eval=FALSE}
+
+data(ancestryData)
+A1 <- data.frame(ref_eur  = c(pi_star = 0, pi_hat = NA),
+                 obs_afr  = c(pi_star = 1, pi_hat = NA))
+
+# Call the funtion using 2 inputs 
+#    (1) D = ancestryData  
+#    (2) ancestry = A
+# 
+#  and store the results in a new dataframe called E.
+#  The final dolumn of E will contain the updated allele frequencies.
+ E <- updateAF(ancestryData,A1)
+```
