@@ -6,7 +6,9 @@
 #' in the data format document.
 #' @param ancestry dataframe: This dataframe is described below in the code.
 #' It is also described in the README.
-#' @param t is the string name of the observed ancestry
+#' @param k number of reference ancestries in the model
+#' Only to be used when pi_hats are unknown/NA.
+#' Only used in the ancestr function.
 #' @return data.frame D with an additional column at the end containing updated allele frequencies.
 #'
 #' @author Gregory Matesi, \email{gregory.matesi@ucdenver.edu}
@@ -20,25 +22,23 @@
 #' Example 1
 #' #########
 #' 
-#' When you make the second input dataframe, the name of the second ancestry 
-#' (gnomad_afr in the example) must match the observed column in D that you want
-#' to generate updated allele frequencies for.
+#' Please see the vignette for description of "D" and "ancestry."
 #' 
-#' # Load in the dataframe for the first argument in the function, D, as described below.
+#' # Load in the dataframe for the first argument in the function, D, as described in the vignette.
 #' data(ancestryData)
 #' 
-#' # User must create a second input datafram containing the pi_hat and pi_star values
-#' # for each ancestry. A is also described below.
+#' # create the "ancestry" input. The user must manually construct this small dataframe.
+#' # this input is described in detail in the vignette
 #' A <-
 #'    data.frame(ref_eur  = c(pi_star = 0, pi_hat = .15),
 #'       obs_afr = c(pi_star = 1, pi_hat = .85))
 #'  
 #' # Call the funtion using 2 inputs 
-#' #   (1) D = ancestryData  the main data frame containing allele frequency data
-#' #   (2) ancestry = A  the dataframe constructed above containing the pi_star and pi_hat values
+#' #   (1) D = ancestryData  
+#' #   (2) ancestry = A 
 #' #
 #' # and store the results in a new dataframe called E.
-#' # The final dolumn of E will contain the updated allele frequencies.
+#' # The final column of E will contain the updated allele frequencies.
 #' E <- updateAF(ancestryData,A)
 #' 
 #' 
@@ -46,78 +46,65 @@
 #' Example 2
 #' #########
 #' 
-#' # Load in the dataframe for the first argument in the function, D, as described below.
+#' Please see the vignette for description of "D" and "ancestry."
+#' 
+#' # Load in the dataframe for the first argument in the function, D, as described in the vignette.
 #' data(ancestryData)
 #' 
-#' # User must create a second input datafram containing the pi_hat and pi_star values
-#' # This time we leave the pi_hat values as NA to allow the other hidden ancestries function
-#' # to estimate them
+#' # create the "ancestry" input. The user must manually construct this small dataframe.
+#' # this input is described in detail in the vignette
 #' A <-
 #'    data.frame(ref_eur  = c(pi_star = 0, pi_hat = NA),
 #'       obs_afr = c(pi_star = 1, pi_hat = NA))
 #'       
 #' # Call the funtion using 3 inputs 
-#' #   (1) D = ancestryData  the main data frame containing allele frequency data
-#' #   (2) ancestry = A  the dataframe constructed above containing the pi_star and pi_hat values
-#' #   (3) t=5  the number of reference ancestries to be included in the model 
-#' #            (ref_eur, ref_afr, ref_eas, ref_sas, ref_iam)
+#' #   (1) D = ancestryData 
+#' #   (2) ancestry = A  
+#' #   (3) t=5  
 #' 
 #' # and store the results in a new dataframe called E.
-#' # The final dolumn of E will contain the updated allele frequencies.
+#' # The final column of E will contain the updated allele frequencies.
 #' E <- updateAF(ancestryData,A)
 #' 
 #' @export
 ######################
 ######################
-# INPUT: 2 data.frames
-#   D:
+# INPUTS:
+#   D (dataframe):
 #       
 #
-#   CHR  RSID       bP       A1 A2  ref_eur     ...  ref_iam   obs_afr    obs_amr    obs_oth
-#   1    rs2887286  1156131  C  T   0.173275495 ...  0.7093    0.4886100  0.52594300 0.22970500
-#   1    rs41477744 2329564  A  G   0.001237745 ...  0.0000    0.0459137  0.00117925 0.00827206
-#   1    rs9661525  2952840  G  T   0.168316089 ...  0.2442    0.1359770  0.28605200 0.15561700
-#   1    rs2817174  3044181  C  T   0.428212624 ...  0.5000    0.8548790  0.48818000 0.47042500
-#   1    rs12139206 3504073  T  C   0.204214851 ...  0.3372    0.7241780  0.29550800 0.25874800
-#   1    rs7514979  3654595  T  C   0.004950604 ...  0.0000    0.3362490  0.01650940 0.02481620
+#     CHR  RSID       bP       A1 A2  ref_eur     ...  ref_iam   obs_afr    obs_amr    obs_oth
+#     1    rs2887286  1156131  C  T   0.173275495 ...  0.7093    0.4886100  0.52594300 0.22970500
+#     1    rs41477744 2329564  A  G   0.001237745 ...  0.0000    0.0459137  0.00117925 0.00827206
+#     1    rs9661525  2952840  G  T   0.168316089 ...  0.2442    0.1359770  0.28605200 0.15561700
+#     1    rs2817174  3044181  C  T   0.428212624 ...  0.5000    0.8548790  0.48818000 0.47042500
+#     1    rs12139206 3504073  T  C   0.204214851 ...  0.3372    0.7241780  0.29550800 0.25874800
+#     1    rs7514979  3654595  T  C   0.004950604 ...  0.0000    0.3362490  0.01650940 0.02481620
 #
-#   ancestry:
-#         For this input, the user may choose to leave the pi_hat entries black.
-#         If they choose to do so, this functino will call the ancestr function
-#         to estimates pi_hat values. 
-#         If the user chooses to go this route, they will need to enter a k value,
-#         which is the number of reference ancestries, and a t = "obs_ancestry"
-#         string that will indicate which observed ancestry to use in the other 
-#         function.
+#   ancestry (dataframe):
+#              ref_eur    obs_afr
+#     pi_star  0.00       1.00
+#     pi_hat   0.15       0.85
 #
-#      data.frame(ref_eur  = c(pi_star = 0, pi_hat = .15),
-#                 obs_afr  = c(pi_star = 1, pi_hat = .85))
+#              ref_eur    obs_afr
+#     pi_star  0.00       1.00
+#     pi_hat   NA         NA
 #
-#      data.frame(ref_eur  = c(pi_star = 0, pi_hat = NA),
-#                 obs_afr  = c(pi_star = 1, pi_hat = NA))
-#
-#
-#            ref_eur    obs_afr
-#   pi_star  0.00       1.00
-#   pi_hat   0.15       0.85
-#
-#            ref_eur    obs_afr
-#   pi_star  0.00       1.00
-#   pi_hat   NA         NA
+#   k (integer):
 ######################
 ######################
 
 updateAF2 <- function(D=NULL, ancestry=NULL, k=NULL){
 
-#   Check to see if pi_hats are NA. If the user entered NA for the pi_hats, 
-#   use ancestr to obtain pi_hat estimates for whichever ancestry the user 
-#   entered for t.
+#   Check to see if pi_hats are NA. If the user entered NA for the pi_hats, this code will 
+#   use the ancestr() function to obtain pi_hat estimates
   if(all(is.na(ancestry[2,])) == TRUE){
     
-    # set t as an integer. It is the column number of the observed ancestry from D.
+    # set t as an integer. It is used as the third input for the ancestr() function
     t <- which(colnames(D) == colnames(ancestry)[dim(ancestry)[2]]) - (5+k)
     
     # Set each pi_hat value
+    # This is where the "k" input finally comes into play
     for (i in 1:dim(ancestry)[2]) {
       ancestry[2,i] <- ancestr(D,k,t)[1,colnames(ancestry)[i]]
     }
