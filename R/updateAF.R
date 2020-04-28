@@ -15,6 +15,11 @@
 #' @keywords genomics
 #' 
 #' @examples
+#' 
+#' #########
+#' Example 1
+#' #########
+#' 
 #' When you make the second input dataframe, the name of the second ancestry 
 #' (gnomad_afr in the example) must match the observed column in D that you want
 #' to generate updated allele frequencies for.
@@ -28,9 +33,35 @@
 #'    data.frame(ref_eur  = c(pi_star = 0, pi_hat = .15),
 #'       obs_afr = c(pi_star = 1, pi_hat = .85))
 #'  
-#' # Call the funtion using two inputs 
-#' #   (1) ancestryData
-#' #   (2) A
+#' # Call the funtion using 2 inputs 
+#' #   (1) D = ancestryData  the main data frame containing allele frequency data
+#' #   (2) ancestry = A  the dataframe constructed above containing the pi_star and pi_hat values
+#' #
+#' # and store the results in a new dataframe called E.
+#' # The final dolumn of E will contain the updated allele frequencies.
+#' E <- updateAF(ancestryData,A)
+#' 
+#' 
+#' #########
+#' Example 2
+#' #########
+#' 
+#' # Load in the dataframe for the first argument in the function, D, as described below.
+#' data(ancestryData)
+#' 
+#' # User must create a second input datafram containing the pi_hat and pi_star values
+#' # This time we leave the pi_hat values as NA to allow the other hidden ancestries function
+#' # to estimate them
+#' A <-
+#'    data.frame(ref_eur  = c(pi_star = 0, pi_hat = NA),
+#'       obs_afr = c(pi_star = 1, pi_hat = NA))
+#'       
+#' # Call the funtion using 3 inputs 
+#' #   (1) D = ancestryData  the main data frame containing allele frequency data
+#' #   (2) ancestry = A  the dataframe constructed above containing the pi_star and pi_hat values
+#' #   (3) t=5  the number of reference ancestries to be included in the model 
+#' #            (ref_eur, ref_afr, ref_eas, ref_sas, ref_iam)
+#' 
 #' # and store the results in a new dataframe called E.
 #' # The final dolumn of E will contain the updated allele frequencies.
 #' E <- updateAF(ancestryData,A)
@@ -60,37 +91,35 @@
 #         function.
 #
 #      data.frame(ref_eur  = c(pi_star = 0, pi_hat = .15),
-#                 ref_afr  = c(pi_star = 1, pi_hat = .85))
+#                 obs_afr  = c(pi_star = 1, pi_hat = .85))
 #
 #      data.frame(ref_eur  = c(pi_star = 0, pi_hat = NA),
-#                 ref_afr  = c(pi_star = 1, pi_hat = NA))
+#                 obs_afr  = c(pi_star = 1, pi_hat = NA))
 #
 #
-#            ref_eur    ref_afr
+#            ref_eur    obs_afr
 #   pi_star  0.00       1.00
 #   pi_hat   0.15       0.85
 #
-#            ref_eur    ref_afr
+#            ref_eur    obs_afr
 #   pi_star  0.00       1.00
 #   pi_hat   NA         NA
 ######################
 ######################
 
-updateAF2 <- function(D=NULL, ancestry=NULL, k=NULL, t="obs_afr"){
+updateAF2 <- function(D=NULL, ancestry=NULL, k=NULL){
 
 #   Check to see if pi_hats are NA. If the user entered NA for the pi_hats, 
 #   use ancestr to obtain pi_hat estimates for whichever ancestry the user 
 #   entered for t.
   if(all(is.na(ancestry[2,])) == TRUE){
     
-    # set t1 as an integer that matches the t input from the other function.
-    # I'm going to change the other function so that we t is a string in order 
-    # to more closely match this functions input.
-    t1 <- which(colnames(D) == t) - (5+k)
+    # set t as an integer. It is the column number of the observed ancestry from D.
+    t <- which(colnames(D) == colnames(ancestry)[dim(ancestry)[2]]) - (5+k)
     
     # Set each pi_hat value
-    for (i in a:dim(ancestry[2])) {
-      ancestry[2,i] <- ancestr(D,k,t1)[1,colnames(ancestry)[i]]
+    for (i in 1:dim(ancestry)[2]) {
+      ancestry[2,i] <- ancestr(D,k,t)[1,colnames(ancestry)[i]]
     }
     
   }
@@ -99,8 +128,8 @@ updateAF2 <- function(D=NULL, ancestry=NULL, k=NULL, t="obs_afr"){
   ancestry[2,] <- ancestry[2,] / sum(ancestry[2,])
   ancestry[1,] <- ancestry[1,] / sum(ancestry[1,])
   
-#   Grab the names of the reference ancestries and the single
-#     observed ancestry.
+#   Grab the names of the reference ancestries
+#   Grab the name of the observed ancestry.
 #   num_ref_ancestries is the number of reference ancestries
 #     being used for the method.
   ref_ancestries <- colnames(ancestry[1:dim(ancestry)[2]-1])
