@@ -94,7 +94,24 @@
 ######################
 ######################
 
-updateAF2 <- function(D=NULL, ancestry=NULL, k=NULL){
+updateAF2 <- function(target       ="None", 
+                      reference    = c("None"),
+                      pi_target    = c(NA), 
+                      pi_reference = c(NA), 
+                      D=NULL, 
+                      k=NULL){
+#   Output the users ancestries and pi values in a dataframe as a check.
+  input_display <- data.frame(matrix(ncol = length(pi_target), nrow = 2))
+  
+  # Set row and column names
+  colnames(input_display) <- c(target,reference); rownames(input_display) <- c("target", "reference")
+  
+  # Set target and reference proportion values
+  input_display[1,] <- pi_target; input_display[2,] <- pi_reference
+  
+  # Show the user thier entries
+  return(input_display)
+}
 
 #   Check to see if pi_hats are NA. If the user entered NA for the pi_hats, this code will 
 #   use the ancestr() function to obtain pi_hat estimates
