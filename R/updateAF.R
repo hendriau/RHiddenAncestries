@@ -2,10 +2,12 @@
 #' 
 #' updates allele frequency data in heterogeneous genetic variant data
 #'
+#' @param target
+#' @param reference
+#' @param pi_target
+#' @param pi_reference
 #' @param D  is a dataframe: This dataframe must be in the same format as described
 #' in the data format document.
-#' @param ancestry dataframe: This dataframe is described below in the code.
-#' It is also described in the README.
 #' @param k number of reference ancestries in the model
 #' Only to be used when pi_hats are unknown/NA.
 #' Only used in the ancestr function.
@@ -22,7 +24,7 @@
 #' Example 1
 #' #########
 #' 
-#' Please see the vignette for description of "D" and "ancestry."
+#' The vignette is not updated yet
 #' 
 #' # Load in the dataframe for the first argument in the function, D, as described in the vignette.
 #' data(ancestryData)
@@ -44,7 +46,7 @@
 #' Example 2
 #' #########
 #' 
-#' Please see the vignette for description of "D" and "ancestry."
+#' The vignette is not updated yet
 #' 
 #' # Load in the dataframe for the first argument in the function, D, as described in the vignette.
 #' data(ancestryData)
@@ -131,8 +133,10 @@ updateAF2 <- function(target       = "None",
 
  
 
-#   We need to sum up the reference ancestry alle multiplied by pi_star. We will call this sum "starred"
-#   We also need to sum up the reference ancestries multiplied by pi_hat. We will call this sum "hatted"
+#   We need to sum the reference ancestry allele frequencies multiplied by pi_target. 
+#   We will call this sum "starred"
+#   We also need to sum up the reference ancestry allele frequencies multiplied by pi_reference. 
+#   We will call this sum "hatted"
   
 #   Initialize "hatted" and "starred"
   hatted  <- vector(mode = "double", length = dim(D)[1])
