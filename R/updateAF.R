@@ -87,8 +87,8 @@
 #
 #   data (dataframe):
 #     
-#
-#     CHR  RSID       POS       A1 A2  ref_eur     ...  ref_iam   obs_afr    obs_amr    obs_oth
+# USE TABS!!!
+#     CHR  RSID       POS      A1 A2  ref_eur     ...  ref_iam   target_afr obs_amr    obs_oth
 #     1    rs2887286  1156131  C  T   0.173275495 ...  0.7093    0.4886100  0.52594300 0.22970500
 #     1    rs41477744 2329564  A  G   0.001237745 ...  0.0000    0.0459137  0.00117925 0.00827206
 #     1    rs9661525  2952840  G  T   0.168316089 ...  0.2442    0.1359770  0.28605200 0.15561700
@@ -104,7 +104,7 @@
 ######################
 ######################
 
-updateAF2 <- function(target       = "None", 
+updateAF <- function(target       = "None", 
                       reference    = c("None"),
                       pi_target    = c(NA), 
                       pi_reference = c(NA), 
