@@ -120,7 +120,7 @@ ancestr = function(D=NULL, k=0, t=0, x_0 =NULL){
   }
   
   # Here we are defining the objective function. This function is evaluated at a 
-  # k-dimensional point x . Each of our K reference allele frequencies are multiplied by 
+  # k-dimensional variant x . Each of our K reference allele frequencies are multiplied by 
   # our current best guess for the ancestry proportion.
   # We then subtract the allele frequency values from the observed homogeneous population.
   # And finally this sum is squared to achieve a least squares form.
